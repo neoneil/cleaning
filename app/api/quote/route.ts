@@ -1,6 +1,10 @@
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { Resend } from "resend";
 
 export const runtime = "nodejs";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
@@ -117,6 +121,82 @@ export async function POST(req: Request) {
       );
     }
 
+    console.log("STEP 4: send emails");
+
+    try {
+      const notifyTo = process.env.QUOTE_NOTIFICATION_EMAIL;
+      const fromEmail = process.env.QUOTE_FROM_EMAIL;
+
+      if (!process.env.RESEND_API_KEY) {
+        throw new Error("RESEND_API_KEY is required.");
+      }
+
+      if (!notifyTo) {
+        throw new Error("QUOTE_NOTIFICATION_EMAIL is required.");
+      }
+
+      if (!fromEmail) {
+        throw new Error("QUOTE_FROM_EMAIL is required.");
+      }
+
+      const propertySummary = [
+        propertyType ? `Property Type: ${propertyType}` : null,
+        suburb ? `Suburb: ${suburb}` : null,
+        bedrooms !== null ? `Bedrooms: ${bedrooms}` : null,
+        bathrooms !== null ? `Bathrooms: ${bathrooms}` : null,
+        livingAreas !== null ? `Living Areas: ${livingAreas}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      await resend.emails.send({
+        from: `CleanPrime <${fromEmail}>`,
+        to: [notifyTo],
+        subject: `New Quote Request - ${suburb || propertyType || "Website Lead"}`,
+        text: `
+A new quote request has been submitted.
+
+Quote ID: ${quoteId}
+Email: ${email}
+Phone: ${phone || "Not provided"}
+
+${propertySummary || "No property details provided."}
+
+Additional Details:
+${message || "None"}
+
+Uploaded Images: ${imagePaths.length}
+        `.trim(),
+      });
+
+      await resend.emails.send({
+        from: `CleanPrime <${fromEmail}>`,
+        to: [email],
+        subject: "We’ve received your quote request",
+        text: `
+Hi,
+
+Thank you for contacting CleanPrime.
+
+We’ve received your quote request and will review your details shortly.
+Our team will get back to you as soon as possible.
+
+Summary:
+${propertySummary || "No property details provided."}
+Phone: ${phone || "Not provided"}
+Uploaded Images: ${imagePaths.length}
+
+Regards,
+Vivi & Chi
+CleanPrime
+        `.trim(),
+      });
+
+      console.log("EMAILS SENT");
+    } catch (emailError) {
+      console.error("EMAIL ERROR:", emailError);
+    }
+
     console.log("SUCCESS");
     return Response.json({ success: true, quoteId });
   } catch (error) {
@@ -132,8 +212,12 @@ export async function POST(req: Request) {
 
 // import { createServerSupabaseClient } from "@/lib/supabase/server";
 
+// export const runtime = "nodejs";
+
 // export async function POST(req: Request) {
 //   try {
+//     console.log("==== /api/quote called ====");
+
 //     const formData = await req.formData();
 
 //     const email = String(formData.get("email") || "").trim();
@@ -150,15 +234,29 @@ export async function POST(req: Request) {
 //     const bathrooms = bathroomsValue ? Number(bathroomsValue) : null;
 //     const livingAreas = livingAreasValue ? Number(livingAreasValue) : null;
 
+//     console.log("Parsed form:", {
+//       email,
+//       phone,
+//       propertyType,
+//       suburb,
+//       message,
+//       bedrooms,
+//       bathrooms,
+//       livingAreas,
+//     });
+
 //     if (!email) {
+//       console.log("Missing email");
 //       return Response.json({ error: "Email is required." }, { status: 400 });
 //     }
 
 //     const supabase = createServerSupabaseClient();
 
-//     // 1) 先插入一条 request
+//     console.log("STEP 1: insert quote request");
+
 //     const { data: inserted, error: insertError } = await supabase
-//       .schema("cleaning").from("quote_requests")
+//       .schema("cleaning")
+//       .from("quote_requests")
 //       .insert({
 //         email,
 //         phone: phone || null,
@@ -170,24 +268,29 @@ export async function POST(req: Request) {
 //         message: message || null,
 //         image_urls: [],
 //       })
-//       .select()
+//       .select("id")
 //       .single();
 
 //     if (insertError || !inserted) {
+//       console.error("INSERT ERROR:", insertError);
 //       return Response.json(
-//         { error: `Insert failed: ${insertError?.message}` },
+//         { error: `Insert failed: ${insertError?.message || "unknown error"}` },
 //         { status: 500 }
 //       );
 //     }
 
 //     const quoteId = inserted.id as string;
+//     console.log("Inserted quoteId:", quoteId);
 
-//     // 2) 上传图片到同一个 request 文件夹下
+//     console.log("STEP 2: upload images");
+
 //     const imageFiles = formData.getAll("images") as File[];
 //     const imagePaths: string[] = [];
 
 //     for (const file of imageFiles) {
 //       if (!file || file.size === 0) continue;
+
+//       console.log("Uploading file:", file.name, file.type, file.size);
 
 //       const buffer = Buffer.from(await file.arrayBuffer());
 //       const safeName = file.name.replace(/\s+/g, "-");
@@ -201,14 +304,17 @@ export async function POST(req: Request) {
 //         });
 
 //       if (uploadError) {
-//         console.error("Upload error:", uploadError.message);
+//         console.error("UPLOAD ERROR:", uploadError);
 //         continue;
 //       }
 
 //       imagePaths.push(filePath);
 //     }
 
-//     // 3) 回写图片路径数组
+//     console.log("Uploaded paths:", imagePaths);
+
+//     console.log("STEP 3: update image_urls");
+
 //     const { error: updateError } = await supabase
 //       .schema("cleaning")
 //       .from("quote_requests")
@@ -216,18 +322,23 @@ export async function POST(req: Request) {
 //       .eq("id", quoteId);
 
 //     if (updateError) {
+//       console.error("UPDATE ERROR:", updateError);
 //       return Response.json(
 //         { error: `Update failed: ${updateError.message}` },
 //         { status: 500 }
 //       );
 //     }
 
+//     console.log("SUCCESS");
 //     return Response.json({ success: true, quoteId });
 //   } catch (error) {
-//     console.error(error);
+//     console.error("UNEXPECTED ERROR:", error);
 //     return Response.json(
-//       { error: "Unexpected server error" },
+//       {
+//         error: error instanceof Error ? error.message : "Unexpected server error",
+//       },
 //       { status: 500 }
 //     );
 //   }
 // }
+
