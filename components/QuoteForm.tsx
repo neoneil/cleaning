@@ -1,0 +1,229 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+export default function QuoteForm() {
+  const router = useRouter();
+  const [files, setFiles] = useState<FileList | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    // if (files) {
+    //   for (let i = 0; i < files.length; i++) {
+    //     formData.append("images", files[i]);
+    //   }
+    // }
+
+    try {
+      const res = await fetch("/api/quote", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json().catch(() => null);
+      console.log("API response:", data);
+
+      if (!res.ok) {
+        throw new Error(data?.error || `Request failed with status ${res.status}`);
+      }
+
+      setMessage("success");
+      form.reset();
+      setFiles(null);
+
+      // 2秒后跳转首页
+      setTimeout(() => {
+        router.push("/");
+      }, 6000);
+    } catch (error: any) {
+      console.error("Submit error:", error);
+      setMessage(error.message || "Submission failed.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <section className="bg-gray-50 py-12 sm:py-16">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-600">
+            Get a Quote
+          </p>
+          <h1 className="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl">
+            Tell us about your property
+          </h1>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-gray-800 sm:text-base">
+            Share a few details and upload photos of the space. We can review
+            the condition and provide a more accurate cleaning quote.
+          </p>
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-2xl border bg-white p-5 shadow-sm sm:p-8"
+        >
+          <div className="grid gap-5 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Email
+              </label>
+              <input
+                name="email"
+                type="email"
+                required
+                placeholder="you@example.com"
+                className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none transition focus:border-black"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Phone
+              </label>
+              <input
+                name="phone"
+                type="tel"
+                placeholder="e.g. 0412 345 678"
+                className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none transition focus:border-black"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Property Type
+              </label>
+              <select
+                name="propertyType"
+                defaultValue=""
+                className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-black"
+              >
+                <option value="" disabled>
+                  Select property type
+                </option>
+                <option value="house">House</option>
+                <option value="unit">Unit</option>
+                <option value="apartment">Apartment</option>
+                <option value="townhouse">Townhouse</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Suburb
+              </label>
+              <input
+                name="suburb"
+                type="text"
+                placeholder="e.g. Berwick"
+                className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none transition focus:border-black"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Bedrooms
+              </label>
+              <input
+                name="bedrooms"
+                type="number"
+                min="0"
+                placeholder="e.g. 3"
+                className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none transition focus:border-black"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Bathrooms
+              </label>
+              <input
+                name="bathrooms"
+                type="number"
+                min="0"
+                placeholder="e.g. 2"
+                className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none transition focus:border-black"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Living Areas
+              </label>
+              <input
+                name="livingAreas"
+                type="number"
+                min="0"
+                placeholder="e.g. 1"
+                className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none transition focus:border-black"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Upload Photos
+              </label>
+              <input
+                name="images"
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={(e) => setFiles(e.target.files)}
+                className="block w-full cursor-pointer text-sm text-gray-700 file:mr-4 file:cursor-pointer file:rounded-full file:border-0 file:bg-black file:px-4 file:py-2 file:text-sm file:font-medium file:text-white file:transition file:duration-200 hover:file:bg-gray-800"
+              />
+              <p className="mt-2 text-xs text-gray-600">
+                You can upload multiple images to help us estimate the work.
+              </p>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Additional Details
+              </label>
+              <textarea
+                name="message"
+                rows={5}
+                placeholder="Tell us more about the condition of the property, preferred date, pet hair, oven cleaning, end of lease cleaning, etc."
+                className="w-full rounded-xl border px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none transition focus:border-black"
+              />
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              type="submit"
+              disabled={loading}
+               className="inline-flex cursor-pointer items-center justify-center rounded-full bg-black px-6 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loading ? "Submitting..." : "Submit Quote Request"}
+            </button>
+
+            {message === "success" && (
+              <div className="mt-6 rounded-2xl border border-green-200 bg-green-50 p-5 text-center shadow-sm">
+                <p className="text-lg font-semibold text-green-800 sm:text-xl">
+                  ✅ Request Submitted Successfully
+                </p>
+                <p className="mt-2 text-sm text-green-700 sm:text-base">
+                  Thank you! We’ve received your details and will get back to you shortly.
+                </p>
+                <p className="mt-2 text-xs text-green-600">
+                  Redirecting to homepage...
+                </p>
+              </div>
+            )}
+          </div>
+        </form>
+      </div>
+    </section>
+  );
+}
+
+
