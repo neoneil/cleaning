@@ -10,7 +10,8 @@ export default function ServiceAreas() {
         </h2>
 
         <p className="mt-3 text-gray-600">
-          We provide cleaning services across Melbourne’s south-east suburbs.
+          We provide cleaning services across Melbourne’s south-east and eastern suburbs.
+          Below are some of the areas we frequently service — <span className="text-green-600 font-bold">but we are not limited to these locations.</span>
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">

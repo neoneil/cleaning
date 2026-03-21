@@ -7,6 +7,76 @@ export type SuburbPage = {
 
 export const suburbs: SuburbPage[] = [
   {
+    slug: "moorabbin",
+    name: "Moorabbin",
+    intro:
+      "Reliable and detail-oriented cleaning services in Moorabbin for homes, apartments, and busy households.",
+    nearby: ["Bentleigh", "Highett", "Mentone", "Hampton East"],
+  },
+  {
+    slug: "bentleigh",
+    name: "Bentleigh",
+    intro:
+      "Professional house cleaning services in Bentleigh with a focus on quality, consistency, and attention to detail.",
+    nearby: ["Moorabbin", "McKinnon", "Ormond", "Brighton East"],
+  },
+  {
+    slug: "mentone",
+    name: "Mentone",
+    intro:
+      "Trusted cleaning services in Mentone for residential properties, including regular cleaning and end of lease cleaning.",
+    nearby: ["Moorabbin", "Parkdale", "Cheltenham", "Beaumaris"],
+  },
+  {
+    slug: "glen-waverley",
+    name: "Glen Waverley",
+    intro:
+      "High-quality cleaning services in Glen Waverley for families and property owners who value reliability and attention to detail.",
+    nearby: ["Mount Waverley", "Wheelers Hill", "Burwood East", "Vermont South"],
+  },
+  {
+    slug: "glen-iris",
+    name: "Glen Iris",
+    intro:
+      "Professional home cleaning services in Glen Iris tailored for busy households and rental properties.",
+    nearby: ["Malvern East", "Camberwell", "Ashburton", "Tooronga"],
+  },
+  {
+    slug: "clayton",
+    name: "Clayton",
+    intro:
+      "Reliable cleaning services in Clayton for apartments, shared homes, and family residences.",
+    nearby: ["Oakleigh", "Springvale", "Mulgrave", "Notting Hill"],
+  },
+  {
+    slug: "mount-waverley",
+    name: "Mount Waverley",
+    intro:
+      "Trusted cleaning services in Mount Waverley with a focus on consistency and high-quality results.",
+    nearby: ["Glen Waverley", "Ashwood", "Burwood", "Chadstone"],
+  },
+  {
+    slug: "oakleigh",
+    name: "Oakleigh",
+    intro:
+      "Professional cleaning services in Oakleigh for homes and rental properties, including detailed and regular cleaning.",
+    nearby: ["Clayton", "Hughesdale", "Carnegie", "Chadstone"],
+  },
+  {
+    slug: "springvale",
+    name: "Springvale",
+    intro:
+      "Affordable and reliable cleaning services in Springvale for households and rental properties.",
+    nearby: ["Clayton", "Dandenong", "Keysborough", "Noble Park"],
+  },
+  {
+    slug: "dandenong",
+    name: "Dandenong",
+    intro:
+      "Experienced cleaning services in Dandenong for residential properties, including deep cleaning and end of lease cleaning.",
+    nearby: ["Springvale", "Noble Park", "Endeavour Hills", "Keysborough"],
+  },
+  {
     slug: "berwick",
     name: "Berwick",
     intro:
