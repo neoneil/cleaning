@@ -39,7 +39,9 @@ export default function Hero() {
               src="/images/hero-1.jpg"
               alt="Professional house cleaning"
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover"
+              priority
             />
           </div>
 
@@ -48,7 +50,9 @@ export default function Hero() {
               src="/images/hero-2.jpg"
               alt="Kitchen cleaning service"
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover"
+              priority
             />
           </div>
 
@@ -57,7 +61,9 @@ export default function Hero() {
               src="/images/hero-3.jpg"
               alt="Clean living space"
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover"
+              priority
             />
           </div>
         </div>
