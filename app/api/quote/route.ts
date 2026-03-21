@@ -1,3 +1,5 @@
+
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { Resend } from "resend";
 
@@ -16,6 +18,15 @@ type QuotePayload = {
   message?: string;
   imagePaths?: string[];
 };
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
 
 export async function POST(req: Request) {
   try {
@@ -41,9 +52,11 @@ export async function POST(req: Request) {
       typeof body.livingAreas === "number" && !Number.isNaN(body.livingAreas)
         ? body.livingAreas
         : null;
-    const imagePaths = Array.isArray(body.imagePaths)
-      ? body.imagePaths.filter(Boolean)
-      : [];
+
+    const imagePaths =
+      Array.isArray(body.imagePaths) && body.imagePaths.length > 0
+        ? body.imagePaths.filter((p): p is string => typeof p === "string" && p.trim().length > 0)
+        : [];
 
     if (!email) {
       return Response.json({ error: "Email is required." }, { status: 400 });
@@ -93,15 +106,61 @@ export async function POST(req: Request) {
         throw new Error("QUOTE_FROM_EMAIL is required.");
       }
 
-      const propertySummary = [
+      const propertySummaryLines = [
         propertyType ? `Property Type: ${propertyType}` : null,
         suburb ? `Suburb: ${suburb}` : null,
         bedrooms !== null ? `Bedrooms: ${bedrooms}` : null,
         bathrooms !== null ? `Bathrooms: ${bathrooms}` : null,
         livingAreas !== null ? `Living Areas: ${livingAreas}` : null,
-      ]
-        .filter(Boolean)
-        .join("\n");
+      ].filter(Boolean) as string[];
+
+      const propertySummaryText =
+        propertySummaryLines.join("\n") || "No property details provided.";
+
+      const propertySummaryHtml =
+        propertySummaryLines.length > 0
+          ? `<ul style="margin:8px 0 0 18px; padding:0;">
+              ${propertySummaryLines
+                .map((line) => `<li style="margin:4px 0;">${escapeHtml(line)}</li>`)
+                .join("")}
+            </ul>`
+          : `<p style="margin:8px 0 0;">No property details provided.</p>`;
+
+      const signedImageUrls: string[] = [];
+
+      for (const path of imagePaths) {
+        const { data, error } = await supabase.storage
+          .from("quote-images")
+          .createSignedUrl(path, 60 * 60 * 24 * 7); // 7 days
+
+        if (!error && data?.signedUrl) {
+          signedImageUrls.push(data.signedUrl);
+        } else {
+          console.error("SIGNED URL ERROR:", path, error);
+        }
+      }
+
+      const imageLinksHtml =
+        signedImageUrls.length > 0
+          ? `<ul style="margin:8px 0 0 18px; padding:0;">
+              ${signedImageUrls
+                .map(
+                  (url, index) => `
+                    <li style="margin:8px 0;">
+                      <a href="${url}" target="_blank" rel="noopener noreferrer">
+                        View image ${index + 1}
+                      </a>
+                    </li>
+                  `
+                )
+                .join("")}
+            </ul>`
+          : `<p style="margin:8px 0 0;">No images uploaded.</p>`;
+
+      const imageLinksText =
+        signedImageUrls.length > 0
+          ? signedImageUrls.map((url, i) => `Image ${i + 1}: ${url}`).join("\n")
+          : "No images uploaded";
 
       await resend.emails.send({
         from: `CleanPrime <${fromEmail}>`,
@@ -114,16 +173,36 @@ Quote ID: ${quoteId}
 Email: ${email}
 Phone: ${phone || "Not provided"}
 
-${propertySummary || "No property details provided."}
+${propertySummaryText}
 
 Additional Details:
 ${message || "None"}
 
 Uploaded Images: ${imagePaths.length}
 
-Image Paths:
-${imagePaths.length ? imagePaths.join("\n") : "No images uploaded"}
+Image Links:
+${imageLinksText}
         `.trim(),
+        html: `
+          <div style="font-family: Arial, Helvetica, sans-serif; color: #111; line-height: 1.6;">
+            <h2 style="margin:0 0 16px;">New Quote Request</h2>
+
+            <p style="margin:8px 0;"><strong>Quote ID:</strong> ${escapeHtml(quoteId)}</p>
+            <p style="margin:8px 0;"><strong>Email:</strong> ${escapeHtml(email)}</p>
+            <p style="margin:8px 0;"><strong>Phone:</strong> ${escapeHtml(phone || "Not provided")}</p>
+
+            <h3 style="margin:24px 0 8px;">Property Details</h3>
+            ${propertySummaryHtml}
+
+            <h3 style="margin:24px 0 8px;">Additional Details</h3>
+            <p style="margin:8px 0; white-space: pre-wrap;">
+              ${escapeHtml(message || "None")}
+            </p>
+
+            <h3 style="margin:24px 0 8px;">Uploaded Images (${signedImageUrls.length})</h3>
+            ${imageLinksHtml}
+          </div>
+        `,
       });
 
       await resend.emails.send({
@@ -139,7 +218,7 @@ We’ve received your quote request and will review your details shortly.
 Our team will get back to you as soon as possible.
 
 Summary:
-${propertySummary || "No property details provided."}
+${propertySummaryText}
 Phone: ${phone || "Not provided"}
 Uploaded Images: ${imagePaths.length}
 
@@ -147,6 +226,30 @@ Regards,
 Vivi & Chi
 CleanPrime
         `.trim(),
+        html: `
+          <div style="font-family: Arial, Helvetica, sans-serif; color: #111; line-height: 1.6;">
+            <h2 style="margin:0 0 16px;">We’ve received your quote request</h2>
+
+            <p style="margin:8px 0;">Hi,</p>
+
+            <p style="margin:8px 0;">
+              Thank you for contacting CleanPrime.
+            </p>
+
+            <p style="margin:8px 0;">
+              We’ve received your quote request and will review your details shortly.
+              Our team will get back to you as soon as possible.
+            </p>
+
+            <h3 style="margin:24px 0 8px;">Summary</h3>
+            ${propertySummaryHtml}
+
+            <p style="margin:8px 0;"><strong>Phone:</strong> ${escapeHtml(phone || "Not provided")}</p>
+            <p style="margin:8px 0;"><strong>Uploaded Images:</strong> ${imagePaths.length}</p>
+
+            <p style="margin:24px 0 0;">Regards,<br />Vivi &amp; Chi<br />CleanPrime</p>
+          </div>
+        `,
       });
     } catch (emailError) {
       console.error("EMAIL ERROR:", emailError);
