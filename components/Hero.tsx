@@ -1,5 +1,5 @@
 import Link from "next/link";
-
+import Image from "next/image";
 export default function Hero() {
   return (
     <section className="bg-gray-100">
@@ -34,9 +34,32 @@ export default function Hero() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="h-48 rounded-2xl bg-[url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=80')] bg-cover bg-center sm:h-64" />
-          <div className="h-48 rounded-2xl bg-[url('https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=900&q=80')] bg-cover bg-center sm:h-64" />
-          <div className="col-span-2 h-56 rounded-2xl bg-[url('https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center sm:h-72" />
+          <div className="relative h-48 overflow-hidden rounded-2xl sm:h-64">
+            <Image
+              src="/images/hero-1.jpg"
+              alt="Professional house cleaning"
+              fill
+              className="object-cover"
+            />
+          </div>
+
+          <div className="relative h-48 overflow-hidden rounded-2xl sm:h-64">
+            <Image
+              src="/images/hero-2.jpg"
+              alt="Kitchen cleaning service"
+              fill
+              className="object-cover"
+            />
+          </div>
+
+          <div className="relative col-span-2 h-56 overflow-hidden rounded-2xl sm:h-72">
+            <Image
+              src="/images/hero-3.jpg"
+              alt="Clean living space"
+              fill
+              className="object-cover"
+            />
+          </div>
         </div>
       </div>
     </section>
