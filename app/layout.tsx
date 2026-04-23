@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from '@vercel/analytics/next';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     title: "Clean Prime Melbourne | Professional Home Cleaning Services",
     description:
       "Reliable and detail-focused home cleaning services across Melbourne.",
-    url: "https://cleanprime.com.au", 
+    url: "https://cleanprime.com.au",
     siteName: "Clean Prime Melbourne",
     locale: "en_AU",
     type: "website",
@@ -48,7 +49,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
