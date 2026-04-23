@@ -34,7 +34,7 @@ function Spinner() {
 
 export default function QuoteForm() {
   const router = useRouter();
-  const supabase =  createBrowserSupabaseClient();
+  const supabase = createBrowserSupabaseClient();
 
   const [files, setFiles] = useState<FileList | null>(null);
   const [loading, setLoading] = useState(false);
@@ -178,7 +178,7 @@ export default function QuoteForm() {
             </h1>
 
             <p className="mt-4 max-w-xl text-sm leading-7 text-gray-700 sm:text-base">
-              Share a few details and upload photos of the space. We’ll review
+              Share a few details and upload photos (optional) of the space. We’ll review
               the condition, understand the scope of work, and provide a more
               accurate cleaning quote.
             </p>
@@ -284,7 +284,7 @@ export default function QuoteForm() {
 
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Upload Photos
+                    Upload Photos (Optional)
                   </label>
 
                   <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-4 transition hover:border-gray-400">
@@ -310,15 +310,17 @@ export default function QuoteForm() {
                     </div>
 
                     <p className="mt-3 text-xs leading-5 text-gray-600">
-                      Upload clear photos of kitchens, bathrooms, floors, walls,
-                      or any areas that need special attention.
+                      Optional — but adding photos helps us give you a faster and more accurate quote.
                     </p>
+                    <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700 ring-1 ring-green-200">
+                      Helps with accurate pricing
+                    </span>
                   </div>
                 </div>
 
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Additional Details
+                    Additional Details (Optional)
                   </label>
                   <textarea
                     name="message"
@@ -353,11 +355,10 @@ export default function QuoteForm() {
 
                 {message === "success" && (
                   <div
-                    className={`rounded-2xl border border-green-200 bg-green-50 p-5 text-center shadow-sm transition-all duration-300 ${
-                      successVisible
-                        ? "translate-y-0 opacity-100"
-                        : "translate-y-1 opacity-0"
-                    }`}
+                    className={`rounded-2xl border border-green-200 bg-green-50 p-5 text-center shadow-sm transition-all duration-300 ${successVisible
+                      ? "translate-y-0 opacity-100"
+                      : "translate-y-1 opacity-0"
+                      }`}
                   >
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                       <svg
