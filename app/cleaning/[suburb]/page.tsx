@@ -3,7 +3,13 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Bilingual from "@/components/Bilingual";
+import SeoJsonLd from "@/components/SeoJsonLd";
 import { suburbs, getSuburb } from "@/app/data/suburbs";
+import {
+  breadcrumbJsonLd,
+  buildPageMetadata,
+  serviceJsonLd,
+} from "@/app/seo";
 
 type Props = {
   params: Promise<{ suburb: string }>;
@@ -37,16 +43,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = getSuburb(suburb);
 
   if (!data) {
-    return {
+    return buildPageMetadata({
       title: "Cleaning Services | CleanPrime",
       description: "Professional cleaning services in Melbourne.",
-    };
+      path: "/service-areas",
+    });
   }
 
-  return {
-    title: `Cleaning Services in ${data.name} | CleanPrime`,
-    description: data.intro,
-  };
+  return buildPageMetadata({
+    title: `Cleaning Services in ${data.name}`,
+    description: `${data.intro} Request a clear quote for regular cleaning, deep cleaning, end of lease cleaning, and move in or move out cleaning in ${data.name}.`,
+    path: `/cleaning/${data.slug}`,
+    keywords: [
+      `cleaning services ${data.name}`,
+      `house cleaning ${data.name}`,
+      `deep cleaning ${data.name}`,
+      `end of lease cleaning ${data.name}`,
+      `cleaner near me ${data.name}`,
+    ],
+  });
 }
 
 export default async function SuburbPage({ params }: Props) {
@@ -60,6 +75,21 @@ export default async function SuburbPage({ params }: Props) {
       <Navbar />
 
       <main className="bg-white text-gray-950">
+        <SeoJsonLd
+          data={[
+            serviceJsonLd({
+              name: `Cleaning services in ${data.name}`,
+              description: data.intro,
+              path: `/cleaning/${data.slug}`,
+              area: data.name,
+            }),
+            breadcrumbJsonLd([
+              { name: "Home", path: "/" },
+              { name: "Service Areas", path: "/service-areas" },
+              { name: data.name, path: `/cleaning/${data.slug}` },
+            ]),
+          ]}
+        />
         <section className="border-b border-gray-200 bg-gray-50">
           <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
             <p className="mb-3 text-xs font-semibold uppercase tracking-normal text-green-700 sm:text-sm">

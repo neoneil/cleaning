@@ -1,11 +1,18 @@
 import Navbar from "@/components/Navbar";
 import Bilingual from "@/components/Bilingual";
+import { buildPageMetadata } from "@/app/seo";
 
-export const metadata = {
-  title: "About Us | CleanPrime",
+export const metadata = buildPageMetadata({
+  title: "About CleanPrime",
   description:
-    "Meet CleanPrime, a reliable husband-and-wife cleaning team with 5 years of hands-on experience delivering detail-focused cleaning services.",
-};
+    "Meet CleanPrime, a reliable husband-and-wife cleaning team with 5 years of hands-on experience providing detail-focused home cleaning in Melbourne.",
+  path: "/about",
+  keywords: [
+    "CleanPrime Melbourne",
+    "Melbourne cleaning team",
+    "husband and wife cleaners Melbourne",
+  ],
+});
 
 const cards = [
   {

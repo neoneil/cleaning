@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from '@vercel/analytics/next';
+import SeoJsonLd from "@/components/SeoJsonLd";
+import {
+  buildPageMetadata,
+  localBusinessJsonLd,
+  siteName,
+  siteUrl,
+  websiteJsonLd,
+} from "@/app/seo";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,28 +22,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: {
-    default: "Clean Prime Melbourne | Professional Home Cleaning Services",
-    template: "%s | Clean Prime Melbourne",
+  metadataBase: new URL(siteUrl),
+  applicationName: siteName,
+  generator: "Next.js",
+  referrer: "origin-when-cross-origin",
+  creator: siteName,
+  publisher: siteName,
+  category: "home services",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
   },
-  description:
-    "Clean Prime Melbourne provides reliable and detail-focused home cleaning services across Melbourne, including regular cleaning, deep cleaning, and end of lease cleaning.",
-  keywords: [
-    "cleaning services Melbourne",
-    "house cleaning Melbourne",
-    "home cleaning Melbourne",
-    "end of lease cleaning Melbourne",
-    "deep cleaning Melbourne",
-    "cleaner near me",
-  ],
-  openGraph: {
-    title: "Clean Prime Melbourne | Professional Home Cleaning Services",
+  ...buildPageMetadata({
+    title: "CleanPrime Melbourne | Professional Home Cleaning Services",
     description:
-      "Reliable and detail-focused home cleaning services across Melbourne.",
-    url: "https://cleanprime.com.au",
-    siteName: "Clean Prime Melbourne",
-    locale: "en_AU",
-    type: "website",
+      "CleanPrime Melbourne provides reliable, detail-focused home cleaning across Melbourne, including regular cleaning, deep cleaning, end of lease cleaning, and move in or move out cleaning.",
+    path: "/",
+  }),
+  title: {
+    default: "CleanPrime Melbourne | Professional Home Cleaning Services",
+    template: "%s | CleanPrime Melbourne",
+  },
+  other: {
+    "geo.region": "AU-VIC",
+    "geo.placename": "Melbourne",
   },
 };
 
@@ -50,6 +61,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <SeoJsonLd data={[localBusinessJsonLd(), websiteJsonLd()]} />
         {children}
         <Analytics />
       </body>

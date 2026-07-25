@@ -1,13 +1,21 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Bilingual from "@/components/Bilingual";
+import SeoJsonLd from "@/components/SeoJsonLd";
 import { suburbs } from "@/app/data/suburbs";
+import { absoluteUrl, buildPageMetadata } from "@/app/seo";
 
-export const metadata = {
-  title: "Service Areas | CleanPrime",
+export const metadata = buildPageMetadata({
+  title: "Melbourne Cleaning Service Areas",
   description:
-    "Explore the suburbs we service across Melbourne's south-east, including Berwick, Narre Warren, Cranbourne, Officer, and Pakenham.",
-};
+    "Explore CleanPrime's residential cleaning service areas across Melbourne's south-east and eastern suburbs, including Berwick, Glen Waverley, Clayton, Dandenong, and Pakenham.",
+  path: "/service-areas",
+  keywords: [
+    "Melbourne cleaning service areas",
+    "south east Melbourne cleaners",
+    "eastern suburbs Melbourne cleaning",
+  ],
+});
 
 export default function ServiceAreasPage() {
   return (
@@ -15,6 +23,19 @@ export default function ServiceAreasPage() {
       <Navbar />
 
       <main className="bg-white text-gray-950">
+        <SeoJsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "CleanPrime Melbourne cleaning service areas",
+            itemListElement: suburbs.map((suburb, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              name: suburb.name,
+              url: absoluteUrl(`/cleaning/${suburb.slug}`),
+            })),
+          }}
+        />
         <section className="border-b border-gray-200 bg-gray-50">
           <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
             <p className="mb-3 text-xs font-semibold uppercase tracking-normal text-green-700 sm:text-sm">

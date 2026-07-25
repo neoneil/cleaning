@@ -1,12 +1,19 @@
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import Bilingual from "@/components/Bilingual";
+import { buildPageMetadata } from "@/app/seo";
 
-export const metadata = {
-  title: "Cleaning Articles | CleanPrime",
+export const metadata = buildPageMetadata({
+  title: "Cleaning Articles and Home Care Guides",
   description:
-    "Read practical cleaning tips, moving-out cleaning advice, and home care articles from CleanPrime.",
-};
+    "Read practical cleaning tips, moving-out cleaning advice, end of lease cleaning guidance, and home care articles from CleanPrime Melbourne.",
+  path: "/blog",
+  keywords: [
+    "cleaning tips Melbourne",
+    "end of lease cleaning checklist Melbourne",
+    "home care cleaning guide",
+  ],
+});
 
 const placeholderPosts = [
   {
