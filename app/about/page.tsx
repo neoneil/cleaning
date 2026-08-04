@@ -60,8 +60,8 @@ export default function AboutPage() {
             </p>
             <h1 className="max-w-3xl text-2xl font-semibold leading-tight sm:text-3xl lg:text-4xl">
               <Bilingual
-                en="Meet Vivi & Chi, your reliable husband-and-wife cleaning team with 5 years of experience"
-                zh="认识 Vivi 和 Chi，一对拥有 5 年经验的可靠夫妻清洁团队"
+                en="Meet Us, your reliable husband-and-wife cleaning team with 5 years of experience"
+                zh="认识我们，一对拥有 5 年经验的可靠夫妻清洁团队"
               />
             </h1>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-gray-700 sm:text-base">

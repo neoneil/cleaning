@@ -138,7 +138,7 @@ export default async function SuburbPage({ params }: Props) {
         <section className="border-y border-gray-200 bg-gray-50">
           <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
             <h2 className="text-2xl font-semibold">
-              <Bilingual en="Why choose Vivi & Chi" zh="为什么选择 Vivi 和 Chi" />
+              <Bilingual en="Why choose us" zh="为什么选择我们" />
             </h2>
 
             <ul className="mt-6 grid gap-3 text-sm text-gray-700 sm:grid-cols-2 lg:grid-cols-3">

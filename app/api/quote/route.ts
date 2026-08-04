@@ -223,7 +223,6 @@ Phone: ${phone || "Not provided"}
 Uploaded Images: ${imagePaths.length}
 
 Regards,
-Vivi & Chi
 CleanPrime
         `.trim(),
         html: `
@@ -247,7 +246,7 @@ CleanPrime
             <p style="margin:8px 0;"><strong>Phone:</strong> ${escapeHtml(phone || "Not provided")}</p>
             <p style="margin:8px 0;"><strong>Uploaded Images:</strong> ${imagePaths.length}</p>
 
-            <p style="margin:24px 0 0;">Regards,<br />Vivi &amp; Chi<br />CleanPrime</p>
+            <p style="margin:24px 0 0;">Regards,<br /><br />CleanPrime</p>
           </div>
         `,
       });
@@ -454,7 +453,6 @@ CleanPrime
 // Uploaded Images: ${imagePaths.length}
 
 // Regards,
-// Vivi & Chi
 // CleanPrime
 //         `.trim(),
 //       });
